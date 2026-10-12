@@ -17,19 +17,27 @@ import {
 import { X, RefreshCw, Shuffle, Hand, Layers } from "lucide-react";
 
 /* ---------- Utilities ---------- */
-const numberCards = Array.from({ length: 13 }, (_, i) => String(i));
+const numberCards = Array.from({ length: 14 }, (_, i) => String(i));
+const replacementCards = ["-2", "-4", "-6", "-8", "-10", "%2"];
+const newlyAddedCards = ["Lucky 13", "Unlucky 7"];
 const specialCards = [
-  "+2",
-  "+4",
-  "+6",
-  "+8",
-  "+10",
-  "x2",
-  "freeze",
-  "flip three",
-  "second chance",
+  ...replacementCards,
+  "Just One More",
+  "Flip Four",
+  "Swap",
+  "Steal",
+  "Discard",
+  "Lucky 13",
+  "Unlucky 7",
 ];
 const allCards = [...numberCards, ...specialCards];
+const specialCardClasses = {
+  "Just One More": "special-card--ice-blue",
+  "Flip Four": "special-card--yellow",
+  Swap: "special-card--green",
+  Steal: "special-card--orange",
+  Discard: "special-card--purple",
+};
 
 export function sortedHandAfterAdd(hand, card) {
   const newHand = [...hand, card];
@@ -46,21 +54,93 @@ export function makeInitialDeck() {
   const base = {};
   numberCards.forEach((n) => {
     const numValue = Number(n);
-    base[n] = numValue === 0 ? 1 : numValue;
+    base[n] =
+      numValue === 0
+        ? 1
+        : numValue === 7
+          ? 6
+          : numValue === 13
+            ? 12
+            : numValue;
   });
   const specials = {
+    "-2": 1,
+    "-4": 1,
+    "-6": 1,
+    "-8": 1,
+    "-10": 1,
+    "%2": 1,
+    "Just One More": 2,
+    "Flip Four": 2,
+    Swap: 2,
+    Steal: 2,
+    Discard: 2,
+    "Lucky 13": 1,
+    "Unlucky 7": 1,
+  };
+  return { ...base, ...specials };
+}
+
+export function restoreDeck(deck) {
+  const currentCards = Object.fromEntries(
+    Object.entries(deck).filter(([card]) => allCards.includes(card)),
+  );
+  const previousSevenDefaultDeck = {
+    ...makeInitialDeck(),
+    "7": 7,
+  };
+  if (
+    Object.entries(previousSevenDefaultDeck).every(
+      ([card, count]) => currentCards[card] === count,
+    )
+  ) {
+    return makeInitialDeck();
+  }
+
+  const previousNumberDefaultDeck = {
+    ...makeInitialDeck(),
+    "13": 13,
+  };
+  if (
+    Object.entries(previousNumberDefaultDeck).every(
+      ([card, count]) => currentCards[card] === count,
+    )
+  ) {
+    return makeInitialDeck();
+  }
+
+  const previousDefaultDeck = {
+    ...makeInitialDeck(),
     "+2": 1,
     "+4": 1,
     "+6": 1,
     "+8": 1,
     "+10": 1,
     x2: 1,
-    freeze: 3,
-    "flip three": 3,
-    "second chance": 3,
+    "Just One More": 3,
+    "Flip Four": 3,
+    Swap: 3,
+    Steal: 3,
+    Discard: 3,
   };
-  return { ...base, ...specials };
+  replacementCards.forEach((card) => delete previousDefaultDeck[card]);
+  newlyAddedCards.forEach((card) => delete previousDefaultDeck[card]);
+  const isPreviousDefaultDeck =
+    replacementCards.every((card) => !(card in currentCards)) &&
+    newlyAddedCards.every(
+      (card) =>
+        !(card in currentCards) ||
+        currentCards[card] === makeInitialDeck()[card],
+    ) &&
+    Object.entries(previousDefaultDeck)
+      .filter(([card]) => allCards.includes(card))
+      .every(([card, count]) => currentCards[card] === count);
+
+  if (isPreviousDefaultDeck) return makeInitialDeck();
+
+  return { ...makeInitialDeck(), ...currentCards };
 }
+
 export function sum(obj) {
   return Object.values(obj).reduce((a, b) => a + b, 0);
 }
@@ -80,11 +160,17 @@ export default function Flip7App() {
       const raw = localStorage.getItem(LS_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed.deck) setDeck(parsed.deck);
-        if (parsed.hand) setHand(parsed.hand);
+        if (parsed.deck) setDeck(restoreDeck(parsed.deck));
+        if (Array.isArray(parsed.hand))
+          setHand(parsed.hand.filter((card) => allCards.includes(card)));
         if (typeof parsed.sortByProb === "boolean")
           setSortByProb(parsed.sortByProb);
-        if (Array.isArray(parsed.history)) setHistory(parsed.history);
+        if (Array.isArray(parsed.history))
+          setHistory(
+            parsed.history.filter(
+              (item) => item && allCards.includes(item.card),
+            ),
+          );
       }
     } catch {}
   }, []);
@@ -199,7 +285,10 @@ export default function Flip7App() {
     return (
       <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition px-3 py-2 gap-2">
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-sm px-2 py-1 rounded-xl">
+          <Badge
+            variant="secondary"
+            className={`text-sm px-2 py-1 rounded-xl${!numberCards.includes(label) ? ` ${specialCardClasses[label] || "special-card"}` : ""}`}
+          >
             {label}
           </Badge>
           <span className="text-xs text-slate-600">{left} left</span>
@@ -304,7 +393,7 @@ export default function Flip7App() {
                         {hand.map((c, i) => (
                           <Badge
                             key={`${c}-${i}`}
-                            className={`rounded-xl text-sm flex items-center gap-2${!numberCards.includes(c) ? " special-card" : ""}`}
+                            className={`rounded-xl text-sm flex items-center gap-2${!numberCards.includes(c) ? ` ${specialCardClasses[c] || "special-card"}` : ""}`}
                           >
                             {c}
                             <button

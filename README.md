@@ -1,13 +1,13 @@
-# Flip7 Tracker
+# Flip 7 - With A Vengeance Tracker
 
-Flip7 Tracker is a web tool designed to help players of the **Flip 7** card game keep track of deck composition, manage their hand, and make informed decisions during gameplay.  
+Flip 7 - With A Vengeance Tracker is a web tool designed to help players of **Flip 7 - With A Vengeance** keep track of deck composition, manage their hand, and make informed decisions during gameplay.
 Everything works directly in your browser — no downloads or setup required.
 
 ---
 
 ## Features
 
-- **Deck Tracking** – Shows the number of each card remaining in the deck.
+- **Deck Tracking** – Shows the number of each card remaining in the deck. The standard deck contains one 0 card, each number from 1 to 6 and 8 to 12 according to its value, six 7 cards, twelve 13 cards, and the special cards listed below.
 - **Hand Management** – Add and remove cards from your hand, clear it, or return cards to the deck.
 - **Probability Sorting** – View cards sorted by highest draw chance or in default numerical order.
 - **Decision Assistant** – See the top draw chances, risk level, and recommendations.
@@ -23,7 +23,7 @@ Everything works directly in your browser — no downloads or setup required.
 
 Simply visit the online version here:
 
-<!-- [https://vortilion.github.io/Flip7-tracker/](https://vortilion.github.io/Flip7-tracker/) -->
+[https://vortilion.github.io/flip7-with-a-vengeance-tracker/](https://vortilion.github.io/flip7-with-a-vengeance-tracker/)
 
 ### Main Tabs
 
@@ -48,6 +48,7 @@ Simply visit the online version here:
 
 - Edit the number of each card remaining in the deck.
 - Restore the default deck at any time.
+- The special cards are **-2**, **-4**, **-6**, **-8**, **-10**, **%2**, **Lucky 13**, and **Unlucky 7** (one each), plus **Just One More**, **Flip Four**, **Swap**, **Steal**, and **Discard** (two each). **Just One More** is ice blue, **Flip Four** yellow, **Swap** green, **Steal** light orange, and **Discard** purple.
 
 ---
 
