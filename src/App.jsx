@@ -283,7 +283,9 @@ export default function Flip7App() {
 
   function CardPill({ label, onPlay, onHand, left }) {
     return (
-      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition px-3 py-2 gap-2">
+      <div
+        className={`flex items-center justify-between rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition px-3 py-2 gap-2${left === 0 ? " opacity-50" : ""}`}
+      >
         <div className="flex items-center gap-2">
           <Badge
             variant="secondary"
@@ -343,9 +345,9 @@ export default function Flip7App() {
             value="play"
             className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 space-y-6-y-6"
           >
-            <div className="grid md:grid-cols-5 gap-6">
+            <div className="grid md:grid-cols-6 gap-6">
               {/* Left: Deck */}
-              <div className="md:col-span-3 space-y-6">
+              <div className="md:col-span-4 space-y-6">
                 <Card className="rounded-xl border-slate-200 bg-white">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -361,7 +363,7 @@ export default function Flip7App() {
                       className="h-2 rounded-full mb-4"
                     />
                     <ScrollArea className="pr-2">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                         {allCards.map((c) => (
                           <CardPill
                             key={c}
