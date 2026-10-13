@@ -50,6 +50,12 @@ export function sortedHandAfterAdd(hand, card) {
   return [...others, ...numeric];
 }
 
+export function removeOneCardFromHand(hand, card) {
+  const index = hand.indexOf(card);
+  if (index === -1) return hand;
+  return [...hand.slice(0, index), ...hand.slice(index + 1)];
+}
+
 export function makeInitialDeck() {
   const base = {};
   numberCards.forEach((n) => {
@@ -236,6 +242,10 @@ export default function Flip7App() {
       setHistory((h) => [{ type: "hand", card }, ...h]);
     }
   };
+  const stealToHand = (card) => {
+    setHand((h) => sortedHandAfterAdd(h, card));
+    setHistory((h) => [{ type: "steal", card }, ...h]);
+  };
   const removeFromHand = (idx) => {
     setHand((h) => h.filter((_, i) => i !== idx));
   };
@@ -266,22 +276,15 @@ export default function Flip7App() {
     setHistory((h) => h.slice(1));
     if (last.type === "played") {
       setDeck((d) => ({ ...d, [last.card]: (d[last.card] || 0) + 1 }));
-    } else if (last.type === "hand") {
-      let removed = false;
-      setHand((h) => {
-        const copy = [...h];
-        const idx = copy.findIndex((c) => !removed && c === last.card);
-        if (idx !== -1) {
-          copy.splice(idx, 1);
-          removed = true;
-        }
-        return copy;
-      });
-      setDeck((d) => ({ ...d, [last.card]: (d[last.card] || 0) + 1 }));
+    } else if (last.type === "hand" || last.type === "steal") {
+      setHand((h) => removeOneCardFromHand(h, last.card));
+      if (last.type === "hand") {
+        setDeck((d) => ({ ...d, [last.card]: (d[last.card] || 0) + 1 }));
+      }
     }
   };
 
-  function CardPill({ label, onPlay, onHand, left }) {
+  function CardPill({ label, onPlay, onHand, onSteal, left }) {
     return (
       <div
         className={`flex items-center justify-between rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition px-3 py-2 gap-2${left === 0 ? " opacity-50" : ""}`}
@@ -295,7 +298,7 @@ export default function Flip7App() {
           </Badge>
           <span className="text-xs text-slate-600">{left} left</span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap justify-end gap-2">
           <Button
             size="sm"
             variant="outline"
@@ -308,6 +311,14 @@ export default function Flip7App() {
           <Button size="sm" onClick={onHand} className="rounded-xl">
             <Hand className="h-4 w-4 mr-1" />
             To hand
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onSteal}
+            className={`rounded-xl border-slate-300 ${specialCardClasses.Steal}`}
+          >
+            Steal
           </Button>
         </div>
       </div>
@@ -371,6 +382,7 @@ export default function Flip7App() {
                             left={deck[c]}
                             onPlay={() => playCard(c)}
                             onHand={() => addToHand(c)}
+                            onSteal={() => stealToHand(c)}
                           />
                         ))}
                       </div>

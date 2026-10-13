@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { sortedHandAfterAdd, makeInitialDeck, restoreDeck, sum } from "../App";
+import {
+  sortedHandAfterAdd,
+  removeOneCardFromHand,
+  makeInitialDeck,
+  restoreDeck,
+  sum,
+} from "../App";
 
 describe("sortedHandAfterAdd", () => {
   it("should add a numeric card to empty hand", () => {
@@ -67,6 +73,15 @@ describe("sortedHandAfterAdd", () => {
     result = sortedHandAfterAdd(result, "-2");
     result = sortedHandAfterAdd(result, "Flip Four");
     expect(result).toEqual(["Just One More", "-2", "Flip Four"]);
+  });
+
+  it("should remove only one matching card from hand", () => {
+    expect(removeOneCardFromHand(["5", "5", "8"], "5")).toEqual(["5", "8"]);
+  });
+
+  it("should leave hand unchanged if card is not present", () => {
+    const hand = ["5", "8"];
+    expect(removeOneCardFromHand(hand, "3")).toBe(hand);
   });
 });
 
