@@ -303,12 +303,18 @@ export default function Flip7App() {
             size="sm"
             variant="outline"
             onClick={onPlay}
+            disabled={left === 0}
             className="rounded-xl border-slate-300"
           >
             <Layers className="h-4 w-4 mr-1" />
             Played
           </Button>
-          <Button size="sm" onClick={onHand} className="rounded-xl">
+          <Button
+            size="sm"
+            onClick={onHand}
+            disabled={left === 0}
+            className="rounded-xl"
+          >
             <Hand className="h-4 w-4 mr-1" />
             To hand
           </Button>
@@ -316,6 +322,7 @@ export default function Flip7App() {
             size="sm"
             variant="outline"
             onClick={onSteal}
+            disabled={left === 0}
             className={`rounded-xl border-slate-300 ${specialCardClasses.Steal}`}
           >
             Steal
@@ -356,9 +363,9 @@ export default function Flip7App() {
             value="play"
             className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 space-y-6-y-6"
           >
-            <div className="grid md:grid-cols-6 gap-6">
+            <div className="grid md:grid-cols-7 gap-6">
               {/* Left: Deck */}
-              <div className="md:col-span-4 space-y-6">
+              <div className="md:col-span-5 space-y-6">
                 <Card className="rounded-xl border-slate-200 bg-white">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
